@@ -5,6 +5,7 @@ use std::{
 };
 
 use github_rs::client::{Executor, Github};
+use github_rs::errors::Error as OriginError;
 use serde::{Deserialize, Serialize};
 use serde_json::{
     Value,
@@ -31,7 +32,15 @@ impl Error for GithubError {
 impl From<JsonError> for GithubError {
     fn from(err: JsonError) -> Self {
         GithubError{
-            reason: "".to_owned(),
+            reason: err.to_string(),
+        }
+    }
+}
+
+impl From<OriginError> for GithubError {
+    fn from(err: OriginError) -> Self {
+        GithubError{
+            reason: err.to_string(),
         }
     }
 }
@@ -58,18 +67,16 @@ impl GitHub {
         let me = self.client.get().user().execute::<Value>();
         match me {
             Ok((_, status, json)) => {
-                if status.is_success() {
-                    return Err(GithubError{reason: "HTTP status error".to_owned()});
+                if !status.is_success() {
+                    return Err(GithubError{reason: format!("HTTP status error, {}", status)});
                 }
-                println!("json: {:?}", json);
                 if let Some(v) = json.unwrap().get("name") {
                     Ok(v.to_string())
                 } else {
                     Err(GithubError{reason: "get field failed".to_owned()})
                 }
-                // Ok(json.unwrap().get("name").unwrap())
             }
-            Err(e) => Err(GithubError{reason: "Unknown error".to_owned()}),
+            Err(e) => Err(e.into()),
         }
     }
 }

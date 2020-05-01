@@ -1,9 +1,9 @@
-mod providers;
 mod config;
+mod providers;
 
 use clap::Clap;
-use providers::github::GitHub;
 use config::Config;
+use providers::github::GitHub;
 
 #[derive(Clap)]
 #[clap(version = "1.0", author = "you06")]

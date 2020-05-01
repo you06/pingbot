@@ -1,10 +1,7 @@
-use std::{
-    fs::read_to_string,
-    io::Error,
-};
+use std::{fs::read_to_string, io::Error};
 
-use toml;
 use serde::Deserialize;
+use toml;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -12,7 +9,7 @@ pub struct Config {
     pub github_token: String,
     #[serde(default)]
     #[serde(rename = "repos")]
-    pub repos: Vec<String>
+    pub repos: Vec<String>,
 }
 
 impl Config {

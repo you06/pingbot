@@ -22,6 +22,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let user = client.get_user_result().await;
     println!("Current user: {}", user.unwrap());
 
-    let _ = client.get_opened_issues(conf.repos.clone()).await?;
+    let issues = client.get_opened_issues(conf.repos.clone()).await?;
+    println!("{} no-reply issues in 3 days", issues.len());
+    for issue in issues {
+        println!("{}", issue);
+    }
+
     Ok(())
 }

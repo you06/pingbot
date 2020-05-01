@@ -88,6 +88,13 @@ pub struct Issue {
     repo: String,
     pull_request: Option<Pull>,
     created_at: DateTime<Utc>,
+    author_association: String,
+}
+
+impl fmt::Display for Issue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "https://github.com/{}/{}/issues/{}", self.owner, self.repo, self.number)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -142,7 +149,7 @@ impl GitHub {
                 if now.signed_duration_since(issue.created_at).num_hours() > 3 * 24 {
                     return false;
                 }
-                issue.pull_request.is_none()
+                issue.pull_request.is_none() && !if_member(&issue.author_association)
             })
             .collect();
 
@@ -153,8 +160,6 @@ impl GitHub {
                 no_comment_issue.push(issue);
             }
         }
-
-        println!("no comment issue in 3 days: {}", no_comment_issue.len());
 
         Ok(no_comment_issue)
     }
@@ -197,12 +202,7 @@ impl GitHub {
         let comments: Vec<Comment> = serde_json::from_str(&res[..])?;
         let member_comments: Vec<Comment> = comments
             .into_iter()
-            .filter(|comment| {
-                comment.author_association == "OWNER"
-                    || comment.author_association == "COLLABORATOR"
-                    || comment.author_association == "MEMBER"
-                    || comment.author_association == "CONTRIBUTOR"
-            })
+            .filter(|comment| if_member(&comment.author_association))
             .collect();
         Ok(member_comments.len())
     }
@@ -211,3 +211,10 @@ impl GitHub {
 fn parse_repos(raw: Vec<String>) -> Vec<Repo> {
     raw.into_iter().map(Into::into).collect()
 }
+
+fn if_member(relation: &String) -> bool {
+    relation == "OWNER"
+        || relation == "COLLABORATOR"
+        || relation == "MEMBER"
+        || relation == "CONTRIBUTOR"
+} 

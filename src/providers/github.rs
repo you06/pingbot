@@ -93,7 +93,11 @@ pub struct Issue {
 
 impl fmt::Display for Issue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "https://github.com/{}/{}/issues/{}", self.owner, self.repo, self.number)
+        write!(
+            f,
+            "https://github.com/{}/{}/issues/{}",
+            self.owner, self.repo, self.number
+        )
     }
 }
 
@@ -217,4 +221,4 @@ fn if_member(relation: &String) -> bool {
         || relation == "COLLABORATOR"
         || relation == "MEMBER"
         || relation == "CONTRIBUTOR"
-} 
+}

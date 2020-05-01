@@ -8,7 +8,6 @@ use providers::github::GitHub;
 #[derive(Clap)]
 #[clap(version = "1.0", author = "you06")]
 struct Opts {
-    /// Sets a custom config file. Could have been an Option<T> with no default too
     #[clap(short = "c", long = "config", default_value = "config.toml")]
     config: String,
 }

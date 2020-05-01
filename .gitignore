@@ -2,5 +2,6 @@
 **/*.rs.bk
 
 .idea
+.vscode
 
 config.toml

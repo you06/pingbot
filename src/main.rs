@@ -13,11 +13,15 @@ struct Opts {
     config: String,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opts: Opts = Opts::parse();
     let conf = Config::new(opts.config).unwrap();
 
     let client = GitHub::new(conf.github_token.to_owned());
-    let user = client.get_user_result();
-    println!("user: {:?}", user);
+    let user = client.get_user_result().await;
+    println!("Current user: {:?}", user.unwrap());
+
+    client.get_opened_issues(conf.repos.clone());
+    Ok(())
 }

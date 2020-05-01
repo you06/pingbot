@@ -10,6 +10,9 @@ use serde::Deserialize;
 pub struct Config {
     #[serde(rename = "github-token")]
     pub github_token: String,
+    #[serde(default)]
+    #[serde(rename = "repos")]
+    pub repos: Vec<String>
 }
 
 impl Config {

@@ -20,8 +20,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let client = GitHub::new(conf.github_token.to_owned());
     let user = client.get_user_result().await;
-    println!("Current user: {:?}", user.unwrap());
+    println!("Current user: {}", user.unwrap());
 
-    client.get_opened_issues(conf.repos.clone());
+    let _ = client.get_opened_issues(conf.repos.clone()).await?;
     Ok(())
 }

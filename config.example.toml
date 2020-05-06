@@ -7,5 +7,5 @@ discourse-base-url = "https://asktug.com"
 # categories to be searched
 # check it out from {discourse-base-url}/categories.json
 discourse-categories = ["TiDB 用户问答", "TiDB 开发者"]
-# for some users don't have name with `PingCAP` suffix, list them here
+# for the users don't have name with `PingCAP` suffix, list them here
 discourse-members = []

@@ -10,6 +10,15 @@ pub struct Config {
     #[serde(default)]
     #[serde(rename = "repos")]
     pub repos: Vec<String>,
+
+    #[serde(rename = "discourse-base-url")]
+    pub discourse_base_url: String,
+    #[serde(default)]
+    #[serde(rename = "discourse-categories")]
+    pub discourse_categories: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "discourse-members")]
+    pub discourse_members: Vec<String>,
 }
 
 impl Config {

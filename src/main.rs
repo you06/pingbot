@@ -45,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if conf.slack_token != "" && conf.slack_channel != "" {
         let slack_client = Slack::new(conf.slack_token.clone());
-        let _ = slack_client.send_message(conf.slack_channel.clone(), report).await?;
+        let _ = slack_client
+            .send_message(conf.slack_channel.clone(), report)
+            .await?;
     } else {
         println!("{}", report);
     }

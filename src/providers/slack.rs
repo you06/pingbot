@@ -43,15 +43,13 @@ impl From<serde_json::error::Error> for Error {
 
 impl From<String> for Error {
     fn from(err: String) -> Self {
-        Error {
-            reason: err,
-        }
+        Error { reason: err }
     }
 }
 
 pub struct Slack {
-  token: String,
-  client: reqwest::Client,
+    token: String,
+    client: reqwest::Client,
 }
 
 struct Header {
@@ -97,16 +95,16 @@ impl Slack {
 
     pub async fn send_message(&self, channel: String, text: String) -> Result<()> {
         let url = format!("{}/{}", API_BASE_URL, "chat.postMessage");
-        let message = Message{text, channel};
+        let message = Message { text, channel };
         let body = serde_json::to_string(&message)?;
-        let res_text = self.request(&url[..], vec!(), body).await?;
+        let res_text = self.request(&url[..], vec![], body).await?;
         let res: Response = serde_json::from_str(&res_text[..])?;
         match res.ok {
             true => Ok(()),
             false => match res.error {
                 Some(e) => Err(e.into()),
                 None => Err("unknown error".to_owned().into()),
-            }
+            },
         }
     }
 }

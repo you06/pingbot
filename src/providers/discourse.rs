@@ -102,7 +102,11 @@ pub struct Topic {
 
 impl fmt::Display for Topic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}: {}, {}/t/topic/{}", self.id, self.title, self.base_url, self.id)
+        write!(
+            f,
+            "{}: {}, {}/t/topic/{}",
+            self.id, self.title, self.base_url, self.id
+        )
     }
 }
 
@@ -211,10 +215,13 @@ impl Discourse {
                 no_reply_topics.extend(cate_no_reply_topics);
             }
         }
-        Ok(no_reply_topics.into_iter().map(|mut topic| {
-            topic.base_url = base_url.to_owned();
-            topic
-        }).collect())
+        Ok(no_reply_topics
+            .into_iter()
+            .map(|mut topic| {
+                topic.base_url = base_url.to_owned();
+                topic
+            })
+            .collect())
     }
 }
 

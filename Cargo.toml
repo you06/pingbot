@@ -12,3 +12,4 @@ toml = "0.5"
 reqwest = { version = "0.10.4", features = ["json"] }
 tokio = { version = "0.2", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
+openssl = { version = "0.10", features = ["vendored"] }

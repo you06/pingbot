@@ -5,6 +5,11 @@ use toml;
 
 #[derive(Deserialize)]
 pub struct Config {
+    #[serde(rename = "slack-token")]
+    pub slack_token: String,
+    #[serde(rename = "slack-channel")]
+    pub slack_channel: String,
+
     #[serde(rename = "github-token")]
     pub github_token: String,
     #[serde(default)]

@@ -5,7 +5,7 @@ use reqwest;
 use serde::{Deserialize, Serialize};
 use serde_json::error::Error as JsonError;
 
-const GITHUB_BASE_URL: &str = "https://api.github.com";
+const API_BASE_URL: &str = "https://api.github.com";
 const PER_PAGE: usize = 100;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -44,7 +44,7 @@ impl From<reqwest::Error> for Error {
 }
 
 pub struct GitHub {
-    pub token: String,
+    token: String,
     client: reqwest::Client,
 }
 
@@ -131,7 +131,7 @@ impl GitHub {
     }
 
     pub async fn get_user_result(&self) -> Result<String> {
-        let url = format!("{}/user", GITHUB_BASE_URL);
+        let url = format!("{}/user", API_BASE_URL);
         let res = self.request(&url[..], vec![]).await?;
         let u: User = serde_json::from_str(&res[..])?;
         Ok(u.login.to_owned())
@@ -176,7 +176,7 @@ impl GitHub {
             page += 1;
             let url = format!(
                 "{}/repos/{}/{}/issues?page={}&per_page={}",
-                GITHUB_BASE_URL, repo.owner, repo.repo, page, PER_PAGE
+                API_BASE_URL, repo.owner, repo.repo, page, PER_PAGE
             );
             let headers = vec![Header {
                 key: "Accept".to_owned(),
@@ -200,7 +200,7 @@ impl GitHub {
     async fn get_comments_by_issue(&self, issue: &Issue) -> Result<usize> {
         let url = format!(
             "{}/repos/{}/{}/issues/{}/comments?per_page={}",
-            GITHUB_BASE_URL, issue.owner, issue.repo, issue.number, PER_PAGE
+            API_BASE_URL, issue.owner, issue.repo, issue.number, PER_PAGE
         );
         let res = self.request(&url[..], vec![]).await?;
         let comments: Vec<Comment> = serde_json::from_str(&res[..])?;

@@ -1,3 +1,7 @@
+# slack
+slack-token = ""
+slack-channel = ""
+
 # github
 github-token = ""
 repos = ["you06/pingbot"]

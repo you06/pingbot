@@ -12,8 +12,8 @@ use providers::slack::Slack;
 struct Opts {
     #[clap(short = "c", long = "config", default_value = "config.toml")]
     config: String,
-    #[clap(short = "p", long = "ping", default_value = "")]
-    ping: String,
+    #[clap(short = "p", long = "ping")]
+    ping: Option<String>,
 }
 
 #[tokio::main]
@@ -21,10 +21,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opts: Opts = Opts::parse();
     let conf = Config::new(opts.config).unwrap();
 
-    if opts.ping != "" {
+    if let Some(ping) = opts.ping {
         let slack_client = Slack::new(conf.slack_token.clone());
         let _ = slack_client
-            .send_message(conf.slack_channel.clone(), opts.ping)
+            .send_message(conf.slack_channel.clone(), ping)
             .await?;
         return Ok(());
     }

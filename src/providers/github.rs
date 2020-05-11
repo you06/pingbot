@@ -79,9 +79,16 @@ pub struct Pull {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct Assignee {
+    id: i32,
+    login: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct Issue {
     number: i32,
     title: String,
+    assignee: Option<Assignee>,
     #[serde(skip_deserializing)]
     owner: String,
     #[serde(skip_deserializing)]
@@ -153,7 +160,7 @@ impl GitHub {
                 if now.signed_duration_since(issue.created_at).num_hours() > 3 * 24 {
                     return false;
                 }
-                issue.pull_request.is_none()// && !if_member(&issue.author_association)
+                issue.pull_request.is_none() && issue.assignee.is_none() // && !if_member(&issue.author_association)
             })
             .collect();
 

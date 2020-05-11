@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Current user: {}", user.unwrap());
 
     let issues = github_client.get_opened_issues(conf.repos.clone()).await?;
-    
+
     if issues.len() != 0 {
         has_issue = true;
         report.push_str(&format!("{} no-reply issues in 3 days\n", issues.len())[..]);
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             report.push_str(&format!("{}\n", topic)[..]);
         }
     }
-        
+
     if conf.slack_token != "" && conf.slack_channel != "" {
         if has_issue || has_topic {
             let slack_client = Slack::new(conf.slack_token.clone());

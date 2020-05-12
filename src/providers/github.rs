@@ -1,4 +1,4 @@
-use std::{convert::From, fmt, collections::HashSet};
+use std::{collections::HashSet, convert::From, fmt};
 
 use chrono::{DateTime, Utc};
 use reqwest;
@@ -230,7 +230,7 @@ impl GitHub {
             .collect();
         Ok(member_comments.len())
     }
-    
+
     fn if_filter_by_label(&self, issue: &Issue) -> bool {
         for label in &issue.labels {
             if self.filter_labels.contains(&label.name) {
@@ -257,12 +257,12 @@ mod tests {
     use super::*;
 
     fn new_client() -> GitHub {
-        let filter_labels = vec!("l1".to_owned(), "l2".to_owned());
+        let filter_labels = vec!["l1".to_owned(), "l2".to_owned()];
         GitHub::new("".to_owned(), filter_labels)
     }
 
     fn new_issue_with_labels(labels: Vec<String>) -> Issue {
-        Issue{
+        Issue {
             number: 0,
             title: "title".to_owned(),
             assignee: None,
@@ -271,20 +271,23 @@ mod tests {
             pull_request: None,
             created_at: Utc::now(),
             author_association: "".to_owned(),
-            labels: labels.into_iter().map(|name| Label{
-                id: 0,
-                name: name,
-                description: "".to_owned(),
-            }).collect(),
+            labels: labels
+                .into_iter()
+                .map(|name| Label {
+                    id: 0,
+                    name: name,
+                    description: "".to_owned(),
+                })
+                .collect(),
         }
     }
 
     #[test]
     fn filter_label() {
         let client = new_client();
-        let issue1 = new_issue_with_labels(vec!("l1".to_owned(), "l2".to_owned()));
-        let issue2 = new_issue_with_labels(vec!("l2".to_owned(), "l3".to_owned()));
-        let issue3 = new_issue_with_labels(vec!("l3".to_owned(), "l4".to_owned()));
+        let issue1 = new_issue_with_labels(vec!["l1".to_owned(), "l2".to_owned()]);
+        let issue2 = new_issue_with_labels(vec!["l2".to_owned(), "l3".to_owned()]);
+        let issue3 = new_issue_with_labels(vec!["l3".to_owned(), "l4".to_owned()]);
         assert_eq!(client.if_filter_by_label(&issue1), true);
         assert_eq!(client.if_filter_by_label(&issue2), true);
         assert_eq!(client.if_filter_by_label(&issue3), false);

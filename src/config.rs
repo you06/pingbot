@@ -54,10 +54,16 @@ mod tests {
         // github
         assert_eq!(config.github_token, "github-token");
         assert_eq!(config.repos, vec!("you06/pingbot"));
-        assert_eq!(config.filter_labels, vec!("filter-label-1", "filter-label-2"));
+        assert_eq!(
+            config.filter_labels,
+            vec!("filter-label-1", "filter-label-2")
+        );
         // discourse
         assert_eq!(config.discourse_base_url, "https://asktug.com");
-        assert_eq!(config.discourse_categories, vec!("TiDB 用户问答", "TiDB 开发者"));
+        assert_eq!(
+            config.discourse_categories,
+            vec!("TiDB 用户问答", "TiDB 开发者")
+        );
         assert_eq!(config.discourse_members, vec!("you06"));
     }
 }

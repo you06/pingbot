@@ -32,7 +32,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut report = "".to_owned();
     let (mut has_issue, mut has_topic) = (false, false);
 
-    let github_client = GitHub::new(conf.github_token.to_owned());
+    let github_client = GitHub::new(conf.github_token.to_owned(), conf.filter_labels.clone());
     let user = github_client.get_user_result().await;
     println!("Current user: {}", user.unwrap());
 

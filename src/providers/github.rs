@@ -1,4 +1,4 @@
-use std::{convert::From, fmt};
+use std::{convert::From, fmt, collections::HashSet};
 
 use chrono::{DateTime, Utc};
 use reqwest;
@@ -46,6 +46,7 @@ impl From<reqwest::Error> for Error {
 pub struct GitHub {
     token: String,
     client: reqwest::Client,
+    filter_labels: HashSet<String>,
 }
 
 struct Header {
@@ -85,6 +86,13 @@ pub struct Assignee {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct Label {
+    id: i64,
+    name: String,
+    description: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct Issue {
     number: i32,
     title: String,
@@ -96,6 +104,7 @@ pub struct Issue {
     pull_request: Option<Pull>,
     created_at: DateTime<Utc>,
     author_association: String,
+    labels: Vec<Label>,
 }
 
 impl fmt::Display for Issue {
@@ -115,12 +124,13 @@ pub struct Comment {
 }
 
 impl GitHub {
-    pub fn new(token: String) -> Self {
+    pub fn new(token: String, filter_labels: Vec<String>) -> Self {
         let mut auth_header = "token ".to_owned();
         auth_header.push_str(&token);
         GitHub {
             token: auth_header,
             client: reqwest::Client::new(),
+            filter_labels: filter_labels.into_iter().collect(),
         }
     }
 
@@ -158,6 +168,9 @@ impl GitHub {
             .into_iter()
             .filter(|issue| {
                 if now.signed_duration_since(issue.created_at).num_hours() > 3 * 24 {
+                    return false;
+                }
+                if self.if_filter_by_label(&issue) {
                     return false;
                 }
                 issue.pull_request.is_none() && issue.assignee.is_none() // && !if_member(&issue.author_association)
@@ -217,6 +230,15 @@ impl GitHub {
             .collect();
         Ok(member_comments.len())
     }
+    
+    fn if_filter_by_label(&self, issue: &Issue) -> bool {
+        for label in &issue.labels {
+            if self.filter_labels.contains(&label.name) {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 fn parse_repos(raw: Vec<String>) -> Vec<Repo> {
@@ -228,4 +250,43 @@ fn if_member(relation: &String) -> bool {
         || relation == "COLLABORATOR"
         || relation == "MEMBER"
         || relation == "CONTRIBUTOR"
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn new_client() -> GitHub {
+        let filter_labels = vec!("l1".to_owned(), "l2".to_owned());
+        GitHub::new("".to_owned(), filter_labels)
+    }
+
+    fn new_issue_with_labels(labels: Vec<String>) -> Issue {
+        Issue{
+            number: 0,
+            title: "title".to_owned(),
+            assignee: None,
+            owner: "".to_owned(),
+            repo: "".to_owned(),
+            pull_request: None,
+            created_at: Utc::now(),
+            author_association: "".to_owned(),
+            labels: labels.into_iter().map(|name| Label{
+                id: 0,
+                name: name,
+                description: "".to_owned(),
+            }).collect(),
+        }
+    }
+
+    #[test]
+    fn filter_label() {
+        let client = new_client();
+        let issue1 = new_issue_with_labels(vec!("l1".to_owned(), "l2".to_owned()));
+        let issue2 = new_issue_with_labels(vec!("l2".to_owned(), "l3".to_owned()));
+        let issue3 = new_issue_with_labels(vec!("l3".to_owned(), "l4".to_owned()));
+        assert_eq!(client.if_filter_by_label(&issue1), true);
+        assert_eq!(client.if_filter_by_label(&issue2), true);
+        assert_eq!(client.if_filter_by_label(&issue3), false);
+    }
 }

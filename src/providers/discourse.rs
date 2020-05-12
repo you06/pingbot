@@ -226,5 +226,8 @@ impl Discourse {
 }
 
 fn is_pingcap_user(name: &String) -> bool {
-    name.ends_with("-PingCAP") || name.ends_with("- PingCAP")
+    let lower_name = name.to_lowercase();
+    lower_name.ends_with("-pingcap")
+        || lower_name.ends_with("- pingcap")
+        || lower_name.starts_with("pingcap")
 }

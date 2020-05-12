@@ -15,6 +15,9 @@ pub struct Config {
     #[serde(default)]
     #[serde(rename = "repos")]
     pub repos: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "filter-labels")]
+    pub filter_labels: Vec<String>,
 
     #[serde(rename = "discourse-base-url")]
     pub discourse_base_url: String,
@@ -31,5 +34,30 @@ impl Config {
         let contents = read_to_string(filename)?;
         let config: Config = toml::from_str(&contents[..]).unwrap();
         Ok(config)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn new_config() -> Result<Config, Error> {
+        Config::new("config.example.toml".to_owned())
+    }
+
+    #[test]
+    fn read_config() {
+        let config = new_config().unwrap();
+        // slack
+        assert_eq!(config.slack_token, "slack-token");
+        assert_eq!(config.slack_channel, "slack-channel");
+        // github
+        assert_eq!(config.github_token, "github-token");
+        assert_eq!(config.repos, vec!("you06/pingbot"));
+        assert_eq!(config.filter_labels, vec!("filter-label-1", "filter-label-2"));
+        // discourse
+        assert_eq!(config.discourse_base_url, "https://asktug.com");
+        assert_eq!(config.discourse_categories, vec!("TiDB 用户问答", "TiDB 开发者"));
+        assert_eq!(config.discourse_members, vec!("you06"));
     }
 }

@@ -81,7 +81,7 @@ pub struct Pull {
 
 #[derive(Serialize, Deserialize)]
 pub struct Assignee {
-    id: i32,
+    id: i64,
     login: String,
 }
 
@@ -89,7 +89,7 @@ pub struct Assignee {
 pub struct Label {
     id: i64,
     name: String,
-    description: String,
+    description: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -198,6 +198,7 @@ impl GitHub {
                 "{}/repos/{}/{}/issues?page={}&per_page={}",
                 API_BASE_URL, repo.owner, repo.repo, page, PER_PAGE
             );
+            println!("{}", url);
             let headers = vec![Header {
                 key: "Accept".to_owned(),
                 value: "application/vnd.github.machine-man-preview".to_owned(),
@@ -206,6 +207,7 @@ impl GitHub {
             let batch: Vec<Issue> = serde_json::from_str(&res[..])?;
             all.extend(batch);
         }
+        println!("all ok");
 
         Ok(all
             .into_iter()
@@ -276,7 +278,7 @@ mod tests {
                 .map(|name| Label {
                     id: 0,
                     name: name,
-                    description: "".to_owned(),
+                    description: Some("".to_owned()),
                 })
                 .collect(),
         }

@@ -198,7 +198,6 @@ impl GitHub {
                 "{}/repos/{}/{}/issues?page={}&per_page={}",
                 API_BASE_URL, repo.owner, repo.repo, page, PER_PAGE
             );
-            println!("{}", url);
             let headers = vec![Header {
                 key: "Accept".to_owned(),
                 value: "application/vnd.github.machine-man-preview".to_owned(),

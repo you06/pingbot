@@ -130,7 +130,10 @@ impl GitHub {
         GitHub {
             token: auth_header,
             client: reqwest::Client::new(),
-            filter_labels: filter_labels.into_iter().collect(),
+            filter_labels: filter_labels
+                .into_iter()
+                .map(|label| label.to_lowercase())
+                .collect(),
         }
     }
 
@@ -234,7 +237,8 @@ impl GitHub {
 
     fn if_filter_by_label(&self, issue: &Issue) -> bool {
         for label in &issue.labels {
-            if self.filter_labels.contains(&label.name) {
+            let lower_label = label.name.to_lowercase();
+            if self.filter_labels.contains(&lower_label) {
                 return true;
             }
         }
